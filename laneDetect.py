@@ -6,29 +6,30 @@ It will take an image of the road that has undergone a perspective transform and
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
-
+import shiftPerspective
 """
-This function will take a transformed and processed image and return a polynomial best fit with degree 2 for each lane line.
+This function will take a transformed and processed image and return a polygon corresponding to the polynomial best fit with degree 2 for each lane line.
 """
 def laneDetect(img) :
     # Image passed to this function is assumed to have been transformed and preprocessed
 
     ########### FIND START POINT ##########
     # Begin by taking vertical sums using numpy
-    img_row_sum = np.sum(img,axis=0)
+    row_sum = np.sum(img,axis=0)
 
 
     # Find the two peaks
     # Split into halves by number of columns
-    mid = img_row_sum.shape[0]/2
-    histLeft = img_row_sum[:mid]
-    histRight = img_row_sum[mid:]
+    mid = row_sum.shape[0]/2
+    histLeft = row_sum[:mid]
+    histRight = row_sum[mid:]
+
     # Use argmax to find locations of maximums for each side (each lane)
     maxLoc = [np.argmax(histLeft), (np.argmax(histRight) + mid)]
-    max = [img_row_sum[maxLoc[0]],img_row_sum[maxLoc[1]]]
+    max = [row_sum[maxLoc[0]],row_sum[maxLoc[1]]]
 
     # Show histogram and peaks
-    #plt.plot(img_row_sum)
+    #plt.plot(row_sum)
     #plt.plot(maxLoc, max, 'r+')
     #plt.show()
 
@@ -37,7 +38,7 @@ def laneDetect(img) :
     # Determine the window size based on the image size
     numberOfWindows = 10
     windowHeight = img.shape[0]/numberOfWindows
-    windowWidth = img.shape[1]/4 #arbitrary
+    windowWidth = img.shape[1]/8 #arbitrary
 
     # Set the starting centerpoints and vertical positions
     cpLeft = maxLoc[0]
@@ -106,29 +107,48 @@ def laneDetect(img) :
 
 
     # Plot best fits
-    x = np.asarray(range(img.shape[0]))
-    y = leftFit[0] * (x**2) + leftFit[1] * x + leftFit[2]
-    y = y.astype(int)
+    row = np.asarray(range(img.shape[0]))
+    colL = leftFit[0] * (row**2) + leftFit[1] * row + leftFit[2]
+    colL = colL.astype(int)
 
-    z = rightFit[0] * (x**2) + rightFit[1] * x + rightFit[2]
-    z = z.astype(int)
+    colR = rightFit[0] * (row**2) + rightFit[1] * row + rightFit[2]
+    colR = colR.astype(int)
 
-    newImg = np.zeros((img.shape[0],img.shape[1]), np.uint8)
-    newImg[leftRows, leftCols] = 255
-    newImg[rightRows, rightCols] = 255
+    newChannel = np.zeros((img.shape[0],img.shape[1]), np.uint8)
+    mask = np.dstack((newChannel, newChannel, newChannel))
+    #newImg[leftRows, leftCols] = 255
+    #newImg[rightRows, rightCols] = 255
+    """
+    for i in range(len(row)) :
+        if (colL[i] > -1) :
+            newImg[row[i],colL[i]] = 255
+        else :
+            newImg[row[i], 0] = 255
+        if (colR[i] < img.shape[1]) :
+            newImg[row[i],colR[i]] = 255
+        else :
+            newImg[row[i], (img.shape[1] - 1)] = 255
+    """
 
-    newImg[x,y] = 100
-    newImg[x,z] = 100
-    cv2.imshow('image',newImg)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
 
-    ########## RETURN ##########
-    return leftFit, rightFit
+    ########## GENERATE POLYGON ##########
+    # convert points to polygon
+    left = np.array([np.transpose(np.vstack([colL, row]))])
+    right = np.array([np.flipud(np.transpose(np.vstack([colR, row])))])
+    pts = np.hstack((left, right))
+
+    cv2.fillPoly(mask, np.int_([pts]), (0, 0, 255))
+
+    #cv2.imshow('image',mask)
+    #cv2.waitKey(0)
+    #cv2.destroyAllWindows()
+
+    ########## RETURN MASK ##########
+    return mask
 
 
 if __name__ == '__main__' :
     # Set to 0 for grayscale
     img = cv2.imread("sampleCurve.png", 0)
     # Call lane detection function
-    laneDetect(img)
+    mask = laneDetect(img)

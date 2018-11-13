@@ -8,12 +8,14 @@ the lane locations added.
 import numpy as np
 import cv2
 import laneDetect
+import shiftPerspective
+import preprocess
 
 if __name__ == "__main__" :
 
     ########## SPLIT VIDEO INTO FRAMES ##########
     # Load input video
-    drivingVideo = cv2.VideoCapture('sampleVideo.mp4')
+    drivingVideo = cv2.VideoCapture('test.mp4')
     # Define codec and initialize videowriter
     fourcc = cv2.VideoWriter_fourcc(*'XVID')
     # 3 = FrameWidth; 4 = FrameHeight; 5 = FPS
@@ -22,15 +24,26 @@ if __name__ == "__main__" :
     while (drivingVideo.isOpened()):
         # Read the next frame
         ret, frame = drivingVideo.read()
+        workingCopy = frame.copy()
 
         ########## PERSPECTIVE TRANSFORM ##########
+        workingCopy = shiftPerspective.shift_perspective(workingCopy, 0)
 
         ########## PRE PROCESSING ##########
+        workingCopy = preprocess.preprocess(workingCopy)
 
         ########## LANE DETECTION ##########
+        mask = laneDetect.laneDetect(workingCopy)
+
 
         ########## LANE AREA OVERLAY ##########
+        mask = shiftPerspective.shift_perspective(mask, 1)
 
+        newFrame = cv2.addWeighted(frame, 1, mask, 0.3, 0)
+
+        #cv2.imshow('image',newFrame)
+        #cv2.waitKey(0)
+        #cv2.destroyAllWindows()
         ########## ADD IMAGE TO OUTPUT VIDEO ##########
         output.write(newFrame)
 
