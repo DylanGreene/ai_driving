@@ -15,10 +15,10 @@ def shift_perspective(frame, mode):
 
     # Select lane area (assuming 1280x720 image)
     PRES_SRC_PNTS = np.float32([
-      (590, 411), # Top-left corner
+      (590, 410), # Top-left corner
       (400, 605), # Bottom-left corner
       (960, 605), # Bottom-right corner
-      (687, 411) # Top-right corner
+      (690, 410) # Top-right corner
     ])
 
     # Select destination area (size of image doesn't change)

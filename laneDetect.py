@@ -116,20 +116,7 @@ def laneDetect(img) :
 
     newChannel = np.zeros((img.shape[0],img.shape[1]), np.uint8)
     mask = np.dstack((newChannel, newChannel, newChannel))
-    #newImg[leftRows, leftCols] = 255
-    #newImg[rightRows, rightCols] = 255
-    """
-    for i in range(len(row)) :
-        if (colL[i] > -1) :
-            newImg[row[i],colL[i]] = 255
-        else :
-            newImg[row[i], 0] = 255
-        if (colR[i] < img.shape[1]) :
-            newImg[row[i],colR[i]] = 255
-        else :
-            newImg[row[i], (img.shape[1] - 1)] = 255
-    """
-
+    
 
     ########## GENERATE POLYGON ##########
     # convert points to polygon
