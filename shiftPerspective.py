@@ -20,7 +20,15 @@ def shift_perspective(frame, mode):
       (960, 605), # Bottom-right corner
       (690, 410) # Top-right corner
     ])
-
+    """
+    # Show region of interest
+    pts = np.array(([590,410],[400,605],[960,605],[690,410]),np.int32)
+    pts = pts.reshape((-1,1,2))
+    cv2.polylines(frame,[pts],True,(255,0,0),3)
+    cv2.imshow('image',frame)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+    """
     # Select destination area (size of image doesn't change)
     PRES_DST_PNTS = np.float32([
       [OFFSET, 0],

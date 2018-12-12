@@ -6,7 +6,7 @@ It will take an image of the road that has undergone a perspective transform and
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
-import shiftPerspective
+
 """
 This function will take a transformed and processed image and return a polygon corresponding to the polynomial best fit with degree 2 for each lane line.
 """
@@ -38,7 +38,7 @@ def laneDetect(img) :
     # Determine the window size based on the image size
     numberOfWindows = 10
     windowHeight = img.shape[0]/numberOfWindows
-    windowWidth = img.shape[1]/8 #arbitrary
+    windowWidth = img.shape[1]/8 # can set tweak this to change performance
 
     # Set the starting centerpoints and vertical positions
     cpLeft = maxLoc[0]
@@ -116,7 +116,6 @@ def laneDetect(img) :
 
     newChannel = np.zeros((img.shape[0],img.shape[1]), np.uint8)
     mask = np.dstack((newChannel, newChannel, newChannel))
-    
 
     ########## GENERATE POLYGON ##########
     # convert points to polygon

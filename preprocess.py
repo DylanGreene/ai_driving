@@ -10,9 +10,10 @@ def preprocess(frame) :
 
     ########## GET NEW COLOR SPACES ##########
 
-    # Extract b channel
+    # Extract b channel from LAB colorspace
     labImage = cv2.cvtColor(frame, cv2.COLOR_BGR2LAB)
     bImage = cv2.split(labImage)[0]
+
     # Extract L channel
     luvImage = cv2.cvtColor(frame, cv2.COLOR_BGR2LUV)
     lImage = cv2.split(luvImage)[0]
@@ -25,5 +26,5 @@ def preprocess(frame) :
     ret, thres = cv2.threshold(blImage, 127, 255, cv2.THRESH_BINARY)
     # Take inverse
     thres = cv2.bitwise_not(thres)
-    
+
     return thres
