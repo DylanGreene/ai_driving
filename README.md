@@ -1,6 +1,5 @@
 # Semantic Segmentation Approach on Road Scenes for Autonomous Driving  
-Notre Dame CSE 40171 | 12 December 2018
-Joe McGrath, Jack Takazawa, Paul Brunts, Dylan Greene
+Notre Dame CSE 40171 | 12 December 2018 | Joe McGrath, Jack Takazawa, Paul Brunts, Dylan Greene
 
 This project implements two different segmentation approaches for autonomous driving.  The first is a modular approach, using image processing techniques to determine the location of the lane lines followed by object detection using a neural network.  The second is a pixel level semantic segmentation approach, using neural networks in TensorFlow to determine road scene segmentation.
 
